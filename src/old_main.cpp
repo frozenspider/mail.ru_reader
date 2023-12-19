@@ -1,4 +1,4 @@
-#include "main.h"
+#include "old_main.h"
 
 // Быстрая функция поиска по памяти, из исходников GNU libc 
 void * memmem(const void *buf, const void *pattern, size_t buflen, size_t len)
