@@ -1,6 +1,6 @@
 #include "main.h"
 
-// Быстрая функция поиска по памяти, из исходников GNU libc 
+// Р‘С‹СЃС‚СЂР°СЏ С„СѓРЅРєС†РёСЏ РїРѕРёСЃРєР° РїРѕ РїР°РјСЏС‚Рё, РёР· РёСЃС…РѕРґРЅРёРєРѕРІ GNU libc 
 void * memmem(const void *buf, const void *pattern, size_t buflen, size_t len)
 {
 	size_t i, j;
@@ -24,8 +24,8 @@ void * memmem(const void *buf, const void *pattern, size_t buflen, size_t len)
 
 void get_history()
 {
-	unsigned int end_id_mail=*(unsigned int*)(mra_base+44+offset_table[1]);
-	unsigned int count_emails=*(unsigned int*)(mra_base+32+offset_table[1]);
+	unsigned int end_id_mail=*(unsigned int*)(mra_base + 0x2C + offset_table[1]); // 0x4b9a001
+	unsigned int count_emails=*(unsigned int*)(mra_base + 0x20 + offset_table[1]); // 0x4b96001
 
 	emails.emails=(struct _email *)VirtualAlloc(NULL,count_emails*sizeof(struct _email),MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE);
 	emails.count_messages=0;
@@ -37,7 +37,7 @@ void get_history()
 
 			emails.emails[emails.count_messages].hTmpFile = NULL;
 			emails.emails[emails.count_messages].id=(_ids*)((unsigned char*)mail_data+0x24);
-			emails.emails[emails.count_messages].history=(wchar_t*)mail_data+0xC8+11; //поставим указатель сразу после "mrahistory_"
+			emails.emails[emails.count_messages].history=(wchar_t*)mail_data+0xC8+11; //РїРѕСЃС‚Р°РІРёРј СѓРєР°Р·Р°С‚РµР»СЊ СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ "mrahistory_"
 
 			emails.count_messages++;
 		}
@@ -47,8 +47,8 @@ void get_history()
 
 
 
-// Главная функция  
-void entry()   
+// Р“Р»Р°РІРЅР°СЏ С„СѓРЅРєС†РёСЏ  
+int main()
 {  
 
 	HMODULE hRe=LoadLibrary(_TEXT("Riched20.dll"));
@@ -59,6 +59,7 @@ void entry()
 	FreeLibrary(hRe);
 
 	ExitProcess(0);
+	return 0;
 }
 
 DWORD CALLBACK EditStreamCallback(DWORD_PTR dwCookie, LPBYTE lpBuff,LONG cb, PLONG pcb)
@@ -108,7 +109,7 @@ BOOL PrintMessage(HWND hwndDlg,struct _emails * emails,int email_index)
 
 	if(0 == emails->emails[email_index].id->id1)
 	{
-		MessageBox(hwndDlg,_TEXT("Нет сообщений"),NULL,MB_OK|MB_ICONINFORMATION);
+		MessageBox(hwndDlg,_TEXT("РќРµС‚ СЃРѕРѕР±С‰РµРЅРёР№"),NULL,MB_OK|MB_ICONINFORMATION);
 		return fSuccess;
 	}
 
@@ -118,8 +119,8 @@ BOOL PrintMessage(HWND hwndDlg,struct _emails * emails,int email_index)
 		if(INVALID_HANDLE_VALUE != hTmpFile )
 		{
 			int id_message=emails->emails[email_index].id->id1;
-			SYSTEMTIME st; // объявляем структурку для конвертирования FILETIME
-			wchar_t buf[128]; // буффер под дату кратный двум для нормального выравнивания.
+			SYSTEMTIME st; // РѕР±СЉСЏРІР»СЏРµРј СЃС‚СЂСѓРєС‚СѓСЂРєСѓ РґР»СЏ РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРёСЏ FILETIME
+			wchar_t buf[128]; // Р±СѓС„С„РµСЂ РїРѕРґ РґР°С‚Сѓ РєСЂР°С‚РЅС‹Р№ РґРІСѓРј РґР»СЏ РЅРѕСЂРјР°Р»СЊРЅРѕРіРѕ РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ.
 			wchar_t enter[2]={0x0d,0x0a};
 			DWORD len;
 			do
@@ -129,24 +130,24 @@ BOOL PrintMessage(HWND hwndDlg,struct _emails * emails,int email_index)
 				FileTimeToSystemTime(&mes->time,&st);
 				len=wsprintfW(buf,L"%02d.%02d.%04d %02d:%02d (0x%X) > ",st.wDay,st.wMonth,st.wYear,st.wHour,st.wMinute, mes->type_message);
 				
-				WriteFile(hTmpFile,buf,len*sizeof(wchar_t),(LPDWORD)&st,NULL); // так как нам больше не нужна структура st ее можно заюзать
+				WriteFile(hTmpFile,buf,len*sizeof(wchar_t),(LPDWORD)&st,NULL); // С‚Р°Рє РєР°Рє РЅР°Рј Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РЅР° СЃС‚СЂСѓРєС‚СѓСЂР° st РµРµ РјРѕР¶РЅРѕ Р·Р°СЋР·Р°С‚СЊ
 
 				wchar_t *str=(wchar_t *)((unsigned char *)mes+sizeof(_message));
 
-				WriteFile(hTmpFile,str,(mes->count_nick - 1)*sizeof(wchar_t),&len,NULL); //пишем ник  -1 что бы убрать завершающий нолик Си строки
-				str+=mes->count_nick; // перемещаем указатель, теперь он указывает сообщение в unicode
+				WriteFile(hTmpFile,str,(mes->count_nick - 1)*sizeof(wchar_t),&len,NULL); //РїРёС€РµРј РЅРёРє  -1 С‡С‚Рѕ Р±С‹ СѓР±СЂР°С‚СЊ Р·Р°РІРµСЂС€Р°СЋС‰РёР№ РЅРѕР»РёРє РЎРё СЃС‚СЂРѕРєРё
+				str+=mes->count_nick; // РїРµСЂРµРјРµС‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ, С‚РµРїРµСЂСЊ РѕРЅ СѓРєР°Р·С‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ РІ unicode
 
 				if(0 == *str && mes->type_message == TYPE_SMS)
 				{
 					mes->count_message=((*(str+1))/sizeof(wchar_t))+1;
-					// костыль там какието не понятные 2 байта
+					// РєРѕСЃС‚С‹Р»СЊ С‚Р°Рј РєР°РєРёРµС‚Рѕ РЅРµ РїРѕРЅСЏС‚РЅС‹Рµ 2 Р±Р°Р№С‚Р°
 					str+=3;
 				}
 
 				WriteFile(hTmpFile,enter,sizeof(enter),(LPDWORD)&st,NULL);
 
-				WriteFile(hTmpFile,str,(mes->count_message - 1)*sizeof(wchar_t),&len,NULL); //пишем сообщение
-				// str+=mes->count_message; // теперь указатель показывает на LSP RTF, но оно нам не надо :)
+				WriteFile(hTmpFile,str,(mes->count_message - 1)*sizeof(wchar_t),&len,NULL); //РїРёС€РµРј СЃРѕРѕР±С‰РµРЅРёРµ
+				// str+=mes->count_message; // С‚РµРїРµСЂСЊ СѓРєР°Р·Р°С‚РµР»СЊ РїРѕРєР°Р·С‹РІР°РµС‚ РЅР° LSP RTF, РЅРѕ РѕРЅРѕ РЅР°Рј РЅРµ РЅР°РґРѕ :)
 
 				WriteFile(hTmpFile,enter,sizeof(enter),(LPDWORD)&st,NULL);
 				WriteFile(hTmpFile,enter,sizeof(enter),(LPDWORD)&st,NULL);
@@ -175,7 +176,7 @@ BOOL PrintMessage(HWND hwndDlg,struct _emails * emails,int email_index)
 	}
 	else
 	{
-		// критическая ошибка...
+		// РєСЂРёС‚РёС‡РµСЃРєР°СЏ РѕС€РёР±РєР°...
 		emails->emails[email_index].hTmpFile = NULL;
 	}
 
@@ -217,14 +218,14 @@ BOOL save_text(UINT type)
 
 	HWND hLV=GetDlgItem(hwndDlg,IDC_LIST1);
 
-	ofn.lpstrFilter=_TEXT("Текстовый файл\0*.txt\0Все файлы\0*.*\0");
+	ofn.lpstrFilter=_TEXT("РўРµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р»\0*.txt\0Р’СЃРµ С„Р°Р№Р»С‹\0*.*\0");
 	len=GetWindowText(GetDlgItem(hwndDlg,IDC_COMBO1),szFile,MAX_PATH);
 
 	switch(type)
 	{
 	case IDM_SAVE_LIST:
 		lstrcatW(szFile,L"_contacts.txt");
-		ofn.lpstrTitle=_TEXT("Сохранить список контактов");
+		ofn.lpstrTitle=_TEXT("РЎРѕС…СЂР°РЅРёС‚СЊ СЃРїРёСЃРѕРє РєРѕРЅС‚Р°РєС‚РѕРІ");
 		break;
 	case IDM_SAVE_HISTORY:
 		ListView_GetItemText(hLV,cur_sel_item_index,0,&szFile[len],MAX_PATH-len);
@@ -251,7 +252,7 @@ BOOL save_text(UINT type)
 		hFile=CreateFile(ofn.lpstrFile,GENERIC_WRITE,0,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
 		if(hFile==INVALID_HANDLE_VALUE) 
 		{
-			MessageBox(hwndDlg,_TEXT("Невозможно создать файл"),NULL,MB_OK|MB_ICONERROR);
+			MessageBox(hwndDlg,_TEXT("РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р»"),NULL,MB_OK|MB_ICONERROR);
 			return FALSE; 
 		}
 
@@ -305,7 +306,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 		LV_COLUMN lc;
 		lc.mask=LVCF_FMT|LVCF_TEXT|LVCF_WIDTH;
 		lc.fmt=LVCFMT_LEFT;
-		lc.pszText=_TEXT("Список контактов"); 
+		lc.pszText=_TEXT("РЎРїРёСЃРѕРє РєРѕРЅС‚Р°РєС‚РѕРІ"); 
 		lc.cx=279;
 
 		SendDlgItemMessage(hwndDlg,IDC_LIST1,LVM_INSERTCOLUMN,0,(LPARAM)&lc);
@@ -317,7 +318,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 
 		switch(LOWORD(wParam))
 		{
-			// Обработка меню -----------------------------------------------
+			// РћР±СЂР°Р±РѕС‚РєР° РјРµРЅСЋ -----------------------------------------------
 		case IDM_SAVE_HISTORY:
 		case IDM_SAVE_LIST:
 			save_text(wParam);
@@ -339,7 +340,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 				ofn.lpstrFile = szFile;
 				ofn.lpstrFile[0] = '\0';
 				ofn.nMaxFile= sizeof(szFile)/sizeof(*szFile);
-				ofn.lpstrFilter=_TEXT("Файл истории Mail.ru агента\0*.dbs\0Все файлы\0*.*\0");
+				ofn.lpstrFilter=_TEXT("Р¤Р°Р№Р» РёСЃС‚РѕСЂРёРё Mail.ru Р°РіРµРЅС‚Р°\0*.dbs\0Р’СЃРµ С„Р°Р№Р»С‹\0*.*\0");
 				ofn.nFilterIndex=1;
 				ofn.Flags=OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_READONLY | OFN_HIDEREADONLY;
 
@@ -367,7 +368,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 								wsprintf(text,_TEXT("%s - %s"),&ofn.lpstrFile[ofn.nFileOffset],WINTITLE);
 								SetWindowText(hwndDlg,text);
 
-								offset_table=(unsigned int *)(mra_base + *(unsigned int*)(mra_base + 16));
+								offset_table=(unsigned int *)(mra_base + *(unsigned int*)(mra_base + 0x10));
 								get_history();
 
 								//SetComboEmail();
@@ -428,7 +429,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 		case IDM_EXIT:
 			SendMessage(hwndDlg,WM_CLOSE,0,0);
 			break; // IDM_EXIT
-			// / Обработка меню -----------------------------------------------//
+			// / РћР±СЂР°Р±РѕС‚РєР° РјРµРЅСЋ -----------------------------------------------//
 		}
 		break;
 

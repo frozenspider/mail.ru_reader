@@ -41,9 +41,9 @@ struct _message{
 	char lol[3]; 
 	unsigned int count_nick;
 	unsigned int magic_num; // 0x38
-	unsigned int count_message; // именно количество, не размер в байтах
+	unsigned int count_message; // РёРјРµРЅРЅРѕ РєРѕР»РёС‡РµСЃС‚РІРѕ, РЅРµ СЂР°Р·РјРµСЂ РІ Р±Р°Р№С‚Р°С…
 	unsigned int xz2; // 
-	unsigned int size_lps_rtf; // байт 
+	unsigned int size_lps_rtf; // Р±Р°Р№С‚ 
 	unsigned int xz3; // 
 };
 
@@ -62,7 +62,7 @@ typedef struct _emails{
 
 struct _emails emails = {NULL,0};
 
-/* Сигнатура строки "mrahistory_" в unicode */
+/* РЎРёРіРЅР°С‚СѓСЂР° СЃС‚СЂРѕРєРё "mrahistory_" РІ unicode */
 unsigned char mrahistory[22] = {
 	0x6D, 0x00, 0x72, 0x00, 0x61, 0x00, 0x68, 0x00, 0x69, 0x00, 0x73, 0x00, 0x74, 0x00, 0x6F, 0x00, 
 	0x72, 0x00, 0x79, 0x00, 0x5F, 0x00

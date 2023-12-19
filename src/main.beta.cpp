@@ -11,9 +11,9 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #define WINTITLE _TEXT("Mail.ru History Reader")
 
-// Типы сообщений
+// РўРёРїС‹ СЃРѕРѕР±С‰РµРЅРёР№
 #define TYPE_SMS 0x11
-#define TYPE_BIRTHDAY 0x0D // напоминалка о дне рождении
+#define TYPE_BIRTHDAY 0x0D // РЅР°РїРѕРјРёРЅР°Р»РєР° Рѕ РґРЅРµ СЂРѕР¶РґРµРЅРёРё
 
 HMENU hMenu;
 HWND hwndDlg;
@@ -44,9 +44,9 @@ struct _message{
 	char lol[3]; 
 	unsigned int count_nick;
 	unsigned int magic_num; // 0x38
-	unsigned int count_message; // именно количество, не размер в байтах
+	unsigned int count_message; // РёРјРµРЅРЅРѕ РєРѕР»РёС‡РµСЃС‚РІРѕ, РЅРµ СЂР°Р·РјРµСЂ РІ Р±Р°Р№С‚Р°С…
 	unsigned int xz2; // 
-	unsigned int size_lps_rtf; // байт 
+	unsigned int size_lps_rtf; // Р±Р°Р№С‚ 
 	unsigned int xz3; // 
 };
 
@@ -67,7 +67,7 @@ typedef struct _emails{
 
 struct _emails emails = {NULL,0};
 
-/* Сигнатура строки "mrahistory_" в unicode */
+/* РЎРёРіРЅР°С‚СѓСЂР° СЃС‚СЂРѕРєРё "mrahistory_" РІ unicode */
 unsigned char mrahistory[22] = {
 	0x6D, 0x00, 0x72, 0x00, 0x61, 0x00, 0x68, 0x00, 0x69, 0x00, 0x73, 0x00, 0x74, 0x00, 0x6F, 0x00, 
 	0x72, 0x00, 0x79, 0x00, 0x5F, 0x00
@@ -75,7 +75,7 @@ unsigned char mrahistory[22] = {
 
 #pragma pack(pop)
 
-// Быстрая функция поиска по памяти, из исходников GNU libc 
+// Р‘С‹СЃС‚СЂР°СЏ С„СѓРЅРєС†РёСЏ РїРѕРёСЃРєР° РїРѕ РїР°РјСЏС‚Рё, РёР· РёСЃС…РѕРґРЅРёРєРѕРІ GNU libc 
 void * memmem(const void *buf, const void *pattern, size_t buflen, size_t len)
 {
 	size_t i, j;
@@ -118,14 +118,14 @@ void get_history()
 			//------------------------
 			emails.emails[emails.count_messages].hTmpFile = NULL;
 			emails.emails[emails.count_messages].id=(_ids*)((unsigned char*)mail_data+0x24);
-			emails.emails[emails.count_messages].history=(wchar_t*)mail_data+0xC8+11; //поставим указатель сразу после "mrahistory_"
+			emails.emails[emails.count_messages].history=(wchar_t*)mail_data+0xC8+11; //РїРѕСЃС‚Р°РІРёРј СѓРєР°Р·Р°С‚РµР»СЊ СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ "mrahistory_"
 
-			// надо попробовать все возможные варианты записать в файл. напри
-			// бывают истории где написано 
-			// mrahistory_user1\x00\x00user2 - коцаные моей старой версией...
-			// бывают где написано
+			// РЅР°РґРѕ РїРѕРїСЂРѕР±РѕРІР°С‚СЊ РІСЃРµ РІРѕР·РјРѕР¶РЅС‹Рµ РІР°СЂРёР°РЅС‚С‹ Р·Р°РїРёСЃР°С‚СЊ РІ С„Р°Р№Р». РЅР°РїСЂРё
+			// Р±С‹РІР°СЋС‚ РёСЃС‚РѕСЂРёРё РіРґРµ РЅР°РїРёСЃР°РЅРѕ 
+			// mrahistory_user1\x00\x00user2 - РєРѕС†Р°РЅС‹Рµ РјРѕРµР№ СЃС‚Р°СЂРѕР№ РІРµСЂСЃРёРµР№...
+			// Р±С‹РІР°СЋС‚ РіРґРµ РЅР°РїРёСЃР°РЅРѕ
 			// mrahistory_user1_user2
-			// вывыют 75312345575_4563154664 - ICQ... 
+			// РІС‹РІС‹СЋС‚ 75312345575_4563154664 - ICQ... 
 
 			//while(*emails.emails[emails.count_messages].email++!=0x75);
 			//emails.emails[emails.count_messages].email[0]=0x00;
@@ -133,7 +133,7 @@ void get_history()
 
 			//emails->emails[emails->count_messages].size=emails->emails[emails->count_messages].email - emails->emails[emails->count_messages].history;
 
-			//while(*emails[k].email++!=0); //таким макаром указатель email сдвигается на + 2 байта (тип wchar_t) и его значение сравнивается с нулем
+			//while(*emails[k].email++!=0); //С‚Р°РєРёРј РјР°РєР°СЂРѕРј СѓРєР°Р·Р°С‚РµР»СЊ email СЃРґРІРёРіР°РµС‚СЃСЏ РЅР° + 2 Р±Р°Р№С‚Р° (С‚РёРї wchar_t) Рё РµРіРѕ Р·РЅР°С‡РµРЅРёРµ СЃСЂР°РІРЅРёРІР°РµС‚СЃСЏ СЃ РЅСѓР»РµРј
 			emails.count_messages++;
 		}
 		end_id_mail=mail_data->id2;
@@ -142,7 +142,7 @@ void get_history()
 
 BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lParam);
 
-// Главная функция  
+// Р“Р»Р°РІРЅР°СЏ С„СѓРЅРєС†РёСЏ  
 int WINAPI WinMain (HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nShowCmd)   
 {  
 	UNREFERENCED_PARAMETER(hPrevInstance);  
@@ -242,7 +242,7 @@ BOOL PrintMessage(HWND hwndDlg,struct _emails * emails,int iItem)
 
 	if(0 == emails->emails[email_index].id->id1)
 	{
-		MessageBox(hwndDlg,_TEXT("Нет сообщений"),NULL,MB_OK|MB_ICONINFORMATION);
+		MessageBox(hwndDlg,_TEXT("РќРµС‚ СЃРѕРѕР±С‰РµРЅРёР№"),NULL,MB_OK|MB_ICONINFORMATION);
 		return fSuccess;
 	}
 
@@ -252,8 +252,8 @@ BOOL PrintMessage(HWND hwndDlg,struct _emails * emails,int iItem)
 		if(INVALID_HANDLE_VALUE != hTmpFile )
 		{
 			int id_message=emails->emails[email_index].id->id1;
-			SYSTEMTIME st; // объявляем структурку для конвертирования FILETIME
-			wchar_t buf[128]; // буффер под дату кратный двум для нормального выравнивания.
+			SYSTEMTIME st; // РѕР±СЉСЏРІР»СЏРµРј СЃС‚СЂСѓРєС‚СѓСЂРєСѓ РґР»СЏ РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРёСЏ FILETIME
+			wchar_t buf[128]; // Р±СѓС„С„РµСЂ РїРѕРґ РґР°С‚Сѓ РєСЂР°С‚РЅС‹Р№ РґРІСѓРј РґР»СЏ РЅРѕСЂРјР°Р»СЊРЅРѕРіРѕ РІС‹СЂР°РІРЅРёРІР°РЅРёСЏ.
 			wchar_t enter[2]={0x0d,0x0a};
 			DWORD len;
 			do
@@ -265,24 +265,24 @@ BOOL PrintMessage(HWND hwndDlg,struct _emails * emails,int iItem)
 				wprintf(_TEXT("%d\t%s\n"),id_message,buf);
 
 
-				WriteFile(hTmpFile,buf,len*sizeof(wchar_t),(LPDWORD)&st,NULL); // так как нам больше не нужна структура st ее можно заюзать
+				WriteFile(hTmpFile,buf,len*sizeof(wchar_t),(LPDWORD)&st,NULL); // С‚Р°Рє РєР°Рє РЅР°Рј Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РЅР° СЃС‚СЂСѓРєС‚СѓСЂР° st РµРµ РјРѕР¶РЅРѕ Р·Р°СЋР·Р°С‚СЊ
 
 				wchar_t *str=(wchar_t *)((unsigned char *)mes+sizeof(_message));
 
-				WriteFile(hTmpFile,str,(mes->count_nick - 1)*sizeof(wchar_t),&len,NULL); //пишем ник  -1 что бы убрать завершающий нолик Си строки
-				str+=mes->count_nick; // перемещаем указатель, теперь он указывает сообщение в unicode
+				WriteFile(hTmpFile,str,(mes->count_nick - 1)*sizeof(wchar_t),&len,NULL); //РїРёС€РµРј РЅРёРє  -1 С‡С‚Рѕ Р±С‹ СѓР±СЂР°С‚СЊ Р·Р°РІРµСЂС€Р°СЋС‰РёР№ РЅРѕР»РёРє РЎРё СЃС‚СЂРѕРєРё
+				str+=mes->count_nick; // РїРµСЂРµРјРµС‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ, С‚РµРїРµСЂСЊ РѕРЅ СѓРєР°Р·С‹РІР°РµС‚ СЃРѕРѕР±С‰РµРЅРёРµ РІ unicode
 
 				if(0 == *str && mes->type_message == TYPE_SMS)
 				{
 					mes->count_message=((*(str+1))/sizeof(wchar_t))+1;
-					// костыль там какието не понятные 2 байта
+					// РєРѕСЃС‚С‹Р»СЊ С‚Р°Рј РєР°РєРёРµС‚Рѕ РЅРµ РїРѕРЅСЏС‚РЅС‹Рµ 2 Р±Р°Р№С‚Р°
 					str+=3;
 				}
 
 				WriteFile(hTmpFile,enter,sizeof(enter),(LPDWORD)&st,NULL);
 
-				WriteFile(hTmpFile,str,(mes->count_message - 1)*sizeof(wchar_t),&len,NULL); //пишем сообщение
-				// str+=mes->count_message; // теперь указатель показывает на LSP RTF, но оно нам не надо :)
+				WriteFile(hTmpFile,str,(mes->count_message - 1)*sizeof(wchar_t),&len,NULL); //РїРёС€РµРј СЃРѕРѕР±С‰РµРЅРёРµ
+				// str+=mes->count_message; // С‚РµРїРµСЂСЊ СѓРєР°Р·Р°С‚РµР»СЊ РїРѕРєР°Р·С‹РІР°РµС‚ РЅР° LSP RTF, РЅРѕ РѕРЅРѕ РЅР°Рј РЅРµ РЅР°РґРѕ :)
 
 				WriteFile(hTmpFile,enter,sizeof(enter),(LPDWORD)&st,NULL);
 				WriteFile(hTmpFile,enter,sizeof(enter),(LPDWORD)&st,NULL);
@@ -311,7 +311,7 @@ BOOL PrintMessage(HWND hwndDlg,struct _emails * emails,int iItem)
 	}
 	else
 	{
-		// критическая ошибка...
+		// РєСЂРёС‚РёС‡РµСЃРєР°СЏ РѕС€РёР±РєР°...
 		emails->emails[email_index].hTmpFile = NULL;
 	}
 
@@ -353,12 +353,12 @@ BOOL save_text(UINT type)
 
 	HWND hLV=GetDlgItem(hwndDlg,IDC_LIST1);
 
-	ofn.lpstrFilter=_TEXT("Текстовый файл\0*.txt\0Все файлы\0*.*\0");
+	ofn.lpstrFilter=_TEXT("РўРµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р»\0*.txt\0Р’СЃРµ С„Р°Р№Р»С‹\0*.*\0");
 	len=GetWindowText(GetDlgItem(hwndDlg,IDC_COMBO1),szFile,MAX_PATH);
 	if(type==IDM_SAVE_LIST) {
 
 		lstrcatW(szFile,L"_contacts.txt");
-		ofn.lpstrTitle=_TEXT("Сохранить список контактов");
+		ofn.lpstrTitle=_TEXT("РЎРѕС…СЂР°РЅРёС‚СЊ СЃРїРёСЃРѕРє РєРѕРЅС‚Р°РєС‚РѕРІ");
 		//ofn.lpstrFilter=&ofn.lpstrFilter[15];
 
 	}
@@ -390,7 +390,7 @@ BOOL save_text(UINT type)
 		hFile=CreateFile(ofn.lpstrFile,GENERIC_WRITE,0,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
 		if(hFile==INVALID_HANDLE_VALUE) 
 		{
-			MessageBox(hwndDlg,_TEXT("Невозможно создать файл"),NULL,MB_OK|MB_ICONERROR);
+			MessageBox(hwndDlg,_TEXT("РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р»"),NULL,MB_OK|MB_ICONERROR);
 			return FALSE; 
 		}
 		if(type==IDM_SAVE_LIST)
@@ -438,7 +438,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 		LV_COLUMN lc;
 		lc.mask=LVCF_FMT|LVCF_TEXT|LVCF_WIDTH;
 		lc.fmt=LVCFMT_LEFT;
-		lc.pszText=_TEXT("Список контактов"); 
+		lc.pszText=_TEXT("РЎРїРёСЃРѕРє РєРѕРЅС‚Р°РєС‚РѕРІ"); 
 		lc.cx=279;
 
 		SendDlgItemMessage(hwndDlg,IDC_LIST1,LVM_INSERTCOLUMN,0,(LPARAM)&lc);
@@ -450,7 +450,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 
 		switch(LOWORD(wParam))
 		{
-			// Обработка меню -----------------------------------------------
+			// РћР±СЂР°Р±РѕС‚РєР° РјРµРЅСЋ -----------------------------------------------
 		case IDM_SAVE_HISTORY:
 		case IDM_SAVE_LIST:
 			save_text(wParam);
@@ -472,7 +472,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 				ofn.lpstrFile = szFile;
 				ofn.lpstrFile[0] = '\0';
 				ofn.nMaxFile= sizeof(szFile)/sizeof(*szFile);
-				ofn.lpstrFilter=_TEXT("Файл истории Mail.ru агента\0*.dbs\0Все файлы\0*.*\0");
+				ofn.lpstrFilter=_TEXT("Р¤Р°Р№Р» РёСЃС‚РѕСЂРёРё Mail.ru Р°РіРµРЅС‚Р°\0*.dbs\0Р’СЃРµ С„Р°Р№Р»С‹\0*.*\0");
 				ofn.nFilterIndex=1;
 				ofn.Flags=OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_READONLY | OFN_HIDEREADONLY;
 
@@ -561,7 +561,7 @@ BOOL CALLBACK MainDialogProc(HWND s_hwndDlg,UINT Message, UINT wParam, LONG lPar
 		case IDM_EXIT:
 			SendMessage(hwndDlg,WM_CLOSE,0,0);
 			break; // IDM_EXIT
-			// / Обработка меню -----------------------------------------------//
+			// / РћР±СЂР°Р±РѕС‚РєР° РјРµРЅСЋ -----------------------------------------------//
 		}
 		break;
 
